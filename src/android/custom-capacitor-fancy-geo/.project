@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>capacitor-fancy-geo</name>
-	<comment>Project capacitor-fancy-geo created by Buildship.</comment>
+	<name>custom-capacitor-fancy-geo</name>
+	<comment>Project custom-capacitor-fancy-geo created by Buildship.</comment>
 	<projects>
 	</projects>
 	<buildSpec>
