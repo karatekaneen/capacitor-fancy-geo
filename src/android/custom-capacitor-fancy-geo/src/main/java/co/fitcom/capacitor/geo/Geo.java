@@ -89,7 +89,7 @@ public class Geo extends Plugin {
             return;
         }
 
-        double radius = call.getDouble("radius");
+        double radius = (double) call.getInt("radius");
         Object notificationObj = call.getObject("notification");
         FancyGeo.FenceNotification notification = null;
         if (notificationObj != null) {
@@ -115,9 +115,14 @@ public class Geo extends Plugin {
 
     @PluginMethod()
     public void hasPermission(PluginCall call) {
-        boolean value = FancyGeo.hasPermission(getContext());
-        JSObject object = new JSObject();
-        object.put("value", value);
+        try {
+            boolean value = FancyGeo.hasPermission(getContext());
+            JSObject object = new JSObject();
+            object.put("value", value);
+            call.resolve(object);
+        } catch (Exception e) {
+            call.reject(e.getMessage(), e);
+        }
     }
 
     @PluginMethod()
@@ -127,7 +132,7 @@ public class Geo extends Plugin {
 
     @PluginMethod()
     public void getCurrentLocation(final PluginCall call) {
-        fancyGeo.getCurrentLocation(new FancyGeo.FancyGeoCurrentLocationListener() {
+        fancyGeo.getCurrentLocation(null, new FancyGeo.FancyGeoCurrentLocationListener() {
             @Override
             public void onLocation(FancyGeo.FancyLocation fancyLocation) {
                 String location = fancyLocation.toJson();
@@ -139,9 +144,10 @@ public class Geo extends Plugin {
                 }
             }
 
+
             @Override
-            public void onLocationError(Exception e) {
-                call.reject(e.getMessage(), e);
+            public void onLocationError(String e) {
+                call.reject(e);
             }
         });
     }
