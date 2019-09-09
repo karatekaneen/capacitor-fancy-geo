@@ -1,7 +1,7 @@
 package com.github.triniwiz.fancygeo;
 
-import android.content.Context;
 import android.app.IntentService;
+import android.app.Notification;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -30,7 +30,6 @@ public class FancyGeofenceTransitionsIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Gson gson = FancyGeo.getGsonInstance();
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent != null && geofencingEvent.hasError()) {
            /* String errorMessage = GeofenceErrorMessages.getErrorString(this,
@@ -45,8 +44,14 @@ public class FancyGeofenceTransitionsIntentService extends IntentService {
         if (launchIntent != null) {
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(launchIntent);
+            this.handleCircleFenceOnTransition(geofencingEvent, "internalNotification");
+        } else {
+            this.handleCircleFenceOnTransition(geofencingEvent, "notification");
         }
+    }
 
+    private void handleCircleFenceOnTransition(GeofencingEvent geofencingEvent, String action) {
+        Gson gson = FancyGeo.getGsonInstance();
         int geofenceTransition = geofencingEvent != null ? geofencingEvent.getGeofenceTransition() : -1;
         List<Geofence> triggeringGeofences = geofencingEvent != null ? geofencingEvent.getTriggeringGeofences() : null;
         SharedPreferences preferences = getApplicationContext().getSharedPreferences(FancyGeo.GEO_LOCATION_DATA, 0);
@@ -59,7 +64,13 @@ public class FancyGeofenceTransitionsIntentService extends IntentService {
                         String type = FancyGeo.getType(request);
                         if (!request.isEmpty() && type.equals("circle")) {
                             FancyGeo.CircleFence geoFence = gson.fromJson(request, FancyGeo.CircleFence.class);
-                            FancyGeoNotifications.sendNotification(geoFence.getNotification(), "enter");
+                            if (action == "notification") {
+                                FancyGeoNotifications.sendNotification(geoFence.getNotification(), "enter");
+                            } else {
+                                FancyGeo.FenceNotification appNotification = geoFence.getNotification();
+                                FancyGeo.executeOnMessageReceivedListener(FancyGeo.getGsonInstance().toJson(appNotification));
+                            }
+
                         }
                     }
                 }
@@ -75,12 +86,17 @@ public class FancyGeofenceTransitionsIntentService extends IntentService {
                         String type = FancyGeo.getType(request);
                         if (!request.isEmpty() && type.equals("circle")) {
                             FancyGeo.CircleFence geoFence = gson.fromJson(request, FancyGeo.CircleFence.class);
-                            FancyGeoNotifications.sendNotification(geoFence.getNotification(), "exit");
+                            if (action == "notification") {
+                                FancyGeoNotifications.sendNotification(geoFence.getNotification(), "exit");
+                            } else {
+                                FancyGeo.FenceNotification appNotification = geoFence.getNotification();
+                                FancyGeo.executeOnMessageReceivedListener(FancyGeo.getGsonInstance().toJson(appNotification));
+                            }
+
                         }
                     }
                 }
                 break;
         }
-
     }
 }
