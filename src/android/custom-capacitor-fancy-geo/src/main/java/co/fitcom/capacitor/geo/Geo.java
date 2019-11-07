@@ -97,6 +97,7 @@ public class Geo extends Plugin {
             notification.setTitle(((JSObject) notificationObj).getString("title"));
             notification.setBody(((JSObject) notificationObj).getString("body"));
             notification.setId(((JSObject) notificationObj).getInteger("id"));
+            notification.setExtra(((JSObject) notificationObj).getJSObject("extra"));
         }
         fancyGeo.createFenceCircle(id, FancyGeo.FenceTransition.values()[transition], loiteringDelay, points, radius, notification, new FancyGeo.FenceCallback() {
             @Override

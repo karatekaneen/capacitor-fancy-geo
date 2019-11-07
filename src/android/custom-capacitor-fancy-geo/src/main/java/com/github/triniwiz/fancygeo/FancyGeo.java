@@ -104,6 +104,11 @@ public class FancyGeo {
         private String title;
         private String body;
         private String requestId;
+        private Object extra;
+
+        public Object getExtra() {
+            return extra;
+        }
 
         public String getRequestId() {
             return requestId;
@@ -123,6 +128,10 @@ public class FancyGeo {
 
         public void setTitle(String title) {
             this.title = title;
+        }
+
+        public void setExtra(Object extra) {
+            this.extra = extra;
         }
 
         public int getId() {
