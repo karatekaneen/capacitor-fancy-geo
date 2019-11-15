@@ -22,5 +22,7 @@
           <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
         </intent-filter>
       </receiver>
+      <receiver
+          android:name="com.github.triniwiz.fancygeo.TimedGPSFixReceiver" />
     </application>
 </manifest>
